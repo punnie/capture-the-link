@@ -184,6 +184,11 @@ $(document).ready(function() {
 			// We do not want to mix vertical and horizontal collisions.
 			if(collision_y) {
 				fakeRectangle.offset.y -= ball_y_speed;
+
+				if(ball_y_speed < 0) {
+					explode(ground);
+				}
+
 				ball_y_speed = 0;
 			}
 
