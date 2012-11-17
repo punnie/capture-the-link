@@ -22,18 +22,18 @@ $(document).ready(function() {
 		canvas.style.left = "0px";
 		canvas.style.top = "0px";
 		canvas.style.zIndex = "99999999";
-		canvas.style.width = "100%";
-		canvas.style.height = "100%";
-		canvas.width = canvas.offsetWidth;
-		canvas.height = canvas.offsetHeight;
+		canvas.style.width = document.width;
+		canvas.style.height = document.height;
+		canvas.width = document.width;
+		canvas.height = document.height;
 		document.body.appendChild(canvas);
 
 		ctx = canvas.getContext('2d');
 		width = canvas.width;
 		height = canvas.height;
 		rectangle = {
-			x: width / 2 - 50,
-			y: height / 2 - 25,
+			x: 300,
+			y: 200,
 			w: 100,
 			h: 50
 		}
@@ -84,7 +84,7 @@ $(document).ready(function() {
 		ctx.clearRect(0, 0, width, height);
 
 		frame = nextFrame(frame);
-		
+
 
 	 	ctx.drawImage(images[dir_left ? frame+5 : frame], rectangle.x, rectangle.y);
 	}
@@ -169,7 +169,7 @@ $(document).ready(function() {
 			}
 
 			fakeRectangle.offset.y += ball_y_speed;
-			
+
 			// We make ground undefined to make sure that we don't explode it and the user is no longer there.
 			ground = [];
 
