@@ -1,0 +1,10 @@
+{
+	"name": "Escape by the link.",
+	"version": "1.0",
+	"manifest_version": 2,
+	"content_scripts": [{
+		"matches": ["https://codebits.eu/*"],
+		"js": ["jquery-1.8.2.min.js", "contentscript.js"],
+		"run_at": "document_end"
+		}]
+	}
