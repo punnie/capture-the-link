@@ -33,7 +33,7 @@ $(document).ready(function() {
 		height = canvas.height;
 		rectangle = {
 			x: width / 2 - 50,
-			y: height / 2 - 25,
+			y: 80,
 			w: 100,
 			h: 50
 		}
@@ -43,11 +43,13 @@ $(document).ready(function() {
     		loadImage(chrome.extension.getURL('images/1.png')),
 			loadImage(chrome.extension.getURL('images/2.png')),
 			loadImage(chrome.extension.getURL('images/3.png')),
+			loadImage(chrome.extension.getURL('images/2.png')),
 			loadImage(chrome.extension.getURL('images/4.png')),
 			loadImage(chrome.extension.getURL('images/5.png')),
 			loadImage(chrome.extension.getURL('images/1_2.png')),
 			loadImage(chrome.extension.getURL('images/2_2.png')),
 			loadImage(chrome.extension.getURL('images/3_2.png')),
+			loadImage(chrome.extension.getURL('images/2_2.png')),
 			loadImage(chrome.extension.getURL('images/4_2.png')),
 			loadImage(chrome.extension.getURL('images/5_2.png'))
 		];
@@ -68,15 +70,15 @@ $(document).ready(function() {
 
 				if(frame < 0)
 					return 0;
-				else if(frame < 3)
+				else if(frame < 4)
 					return frame;
 				else
 					return 0;
 			}
-			return 3; // Stopped.
+			return 4; // Stopped.
 		}
 		else {
-			return 4; // Jumping.
+			return 5; // Jumping.
 		}
 	}
 
@@ -86,7 +88,7 @@ $(document).ready(function() {
 		frame = nextFrame(frame);
 		
 
-	 	ctx.drawImage(images[dir_left ? frame+5 : frame], rectangle.x, rectangle.y);
+	 	ctx.drawImage(images[dir_left ? frame+6 : frame], rectangle.x, rectangle.y);
 	}
 
 	// [name] image file name
