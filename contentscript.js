@@ -4,6 +4,9 @@ $(document).ready(function() {
 	var ball_x_speed = 0;
 	var ball_y_speed = 0;
 
+	var forceElements = false;
+	var ground;
+
 	function init() {
 		// Overlay canvas.
 		canvas = document.createElement('canvas');
@@ -44,7 +47,7 @@ $(document).ready(function() {
 			return function(force) {
 				force = typeof a !== 'undefined' ? force : false;
 
-				if(elements.length == 0 || force) {
+				if(elements.length == 0 || force || forceElements) {
 					element_string = "a, p, h1, h2, h3, h4, h5, h6, hr, li";
 
 					$(element_string).each(function(i, e) {
@@ -53,6 +56,7 @@ $(document).ready(function() {
 
 					elements = $(element_string).map(function(i, e) {
 						return {
+							element: e,
 							offset: {
 								x: $(e).offset().left,
 								y: $(e).offset().top
@@ -61,6 +65,12 @@ $(document).ready(function() {
 							height: $(e).height()
 						}
 					});
+
+					// We make this true after the animations on the explode.
+					// And make it false again, in order to avoid more calls until the next explode.
+					if(forceElements)
+						console.log("forced");
+					forceElements = false;
 				}
 
 				return elements;
@@ -104,14 +114,21 @@ $(document).ready(function() {
 
 			fakeRectangle.offset.y += ball_y_speed;
 			
+			// We make ground undefined to make sure that we don't explode it and the user is no longer there.
+			ground = [];
 
 			for(i = 0; i < pageElements().length; i++) {
 				if(overlaps(pageElements()[i], fakeRectangle).collide) {
 					collision_y = true;
-					fakeRectangle.offset.y -= ball_y_speed;
-					ball_y_speed = 0;
-					break;
+					ground.push(pageElements()[i].element);
 				}
+			}
+
+			// In case of a vertical collision, we make sure the y is set back to its original value.
+			// We do not want to mix vertical and horizontal collisions.
+			if(collision_y) {
+				fakeRectangle.offset.y -= ball_y_speed;
+				ball_y_speed = 0;
 			}
 
 			fakeRectangle.offset.x += ball_x_speed;
@@ -121,7 +138,6 @@ $(document).ready(function() {
 					collision_x = true;
 					fakeRectangle.offset.x -= ball_x_speed;
 					ball_x_speed = 0;
-					break;
 				}
 			}
 		}
@@ -184,10 +200,14 @@ $(document).ready(function() {
 			// nothing
 			break;
 		// h (grapling hook)
+		case 69:
+			explode(ground);
+			break;
 		case 72:
 			if(!grappling) {
 				console.log("GRAPLING HOOK!");
 			}
+
 			grappling = true;
 			break;
 			// default case
@@ -201,12 +221,58 @@ $(document).ready(function() {
 		// left arrow
 		case 65:
 		case 68:
-
 			ball_x_speed = 0;
 			break;
 		default:
 			console.log("keyUp:"+e.keyCode);
 		}
+	};
+
+	function explode(grounds) {
+		console.log(grounds.length)
+		var length = grounds.length;
+		var once = true;
+		for(var j = 0; j < grounds.length; j++) {
+			var o = grounds[j];
+
+			if(o != undefined) {
+				var $o = $(o);
+
+				// Remove from colisions.
+				for(var i = 0; i < pageElements().length; i++) {
+					if(pageElements()[i].element === o) {
+						pageElements().splice(i, 1);
+						break;
+					}
+				}
+
+				$o.html($o.text().replace(/([\S])/g, "<span>$1</span>"));
+				$o.css("position", "relative");
+				$("span", $o).each(function(i) {
+					var newTop = Math.floor(Math.random() * 500) * ((i % 2) ? 1 : -1);
+					var newLeft = Math.floor(Math.random() * 500) * ((i % 2) ? 1 : -1);
+
+					$(this).css({
+						position: "relative",
+						opacity: 1,
+						fontSize: 12,
+						top: 0,
+						left: 0
+					}).animate({
+						opacity: 0,
+						fontSize: 84,
+						top: newTop,
+						left: newLeft
+					}, 1000, function() {
+						$(this).remove();
+
+						// The next time we ask for the elements, we will force them to refresh their coordinates.
+						forceElements = true;
+					});
+				});
+			}
+		}
+		grounds = [];
 	};
 
 	document.addEventListener('keydown', keyDown, true);
