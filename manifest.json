@@ -7,5 +7,5 @@
 		"js": ["jquery-1.8.2.min.js", "contentscript.js"],
 		"run_at": "document_end"
 		}],
-		"web_accessible_resources": ["images/1.png", "images/2.png", "images/3.png", "images/4.png", "images/1_2.png", "images/2_2.png", "images/3_2.png", "images/4_2.png"]
+		"web_accessible_resources": ["images/1.png", "images/2.png", "images/3.png", "images/4.png", "images/5.png", "images/1_2.png", "images/2_2.png", "images/3_2.png", "images/4_2.png", "images/5_2.png"]
 	}

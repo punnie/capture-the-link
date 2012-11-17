@@ -44,10 +44,12 @@ $(document).ready(function() {
 			loadImage(chrome.extension.getURL('images/2.png')),
 			loadImage(chrome.extension.getURL('images/3.png')),
 			loadImage(chrome.extension.getURL('images/4.png')),
+			loadImage(chrome.extension.getURL('images/5.png')),
 			loadImage(chrome.extension.getURL('images/1_2.png')),
 			loadImage(chrome.extension.getURL('images/2_2.png')),
 			loadImage(chrome.extension.getURL('images/3_2.png')),
-			loadImage(chrome.extension.getURL('images/4_2.png'))
+			loadImage(chrome.extension.getURL('images/4_2.png')),
+			loadImage(chrome.extension.getURL('images/5_2.png'))
 		];
 
 		drawCanvas();
@@ -56,29 +58,36 @@ $(document).ready(function() {
 	}
 
 	function nextFrame(frame) {
-		if(moving) {
-			dateNow = Date.now();
-			if(dateNow-dateLast > 100) {
-				dateLast = dateNow;
-				frame++;
-			}
+		console.log(ball_y_speed);
+		if(ball_y_speed >= 0) {
+			if(moving) {
+				dateNow = Date.now();
+				if(dateNow-dateLast > 100) {
+					dateLast = dateNow;
+					frame++;
+				}
 
-			if(frame < 0)
-				return 0;
-			else if(frame < 3)
-				return frame;
-			else
-				return 0;
+				if(frame < 0)
+					return 0;
+				else if(frame < 3)
+					return frame;
+				else
+					return 0;
+			}
+			return 3; // Stopped.
 		}
-		return 3;
+		else {
+			return 4; // Jumping.
+		}
 	}
 
 	function drawCanvas() {
 		ctx.clearRect(0, 0, width, height);
 
 		frame = nextFrame(frame);
+		
 
-	 	ctx.drawImage(images[dir_left ? frame+4 : frame], rectangle.x, rectangle.y);
+	 	ctx.drawImage(images[dir_left ? frame+5 : frame], rectangle.x, rectangle.y);
 	}
 
 	// [name] image file name
