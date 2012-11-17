@@ -7,6 +7,10 @@ $(document).ready(function() {
 	var forceElements = false;
 	var ground;
 
+	var flag;
+	var flagX = 0;
+	var flagY = 0;
+
 	var images;
 	var frame = -1;
 	var dir_left = false;
@@ -53,10 +57,30 @@ $(document).ready(function() {
 			loadImage(chrome.extension.getURL('images/4_2.png')),
 			loadImage(chrome.extension.getURL('images/5_2.png'))
 		];
+	}
 
-		drawCanvas();
+	function generateGoal(elements, force) {
+		if(flag == undefined || force) {
+			var allLinks = document.links;
+			
+			flagX = $(allLinks[6]).offset().left;
+			flagY = $(allLinks[6]).offset().top;
 
+			flag = loadImage(chrome.extension.getURL('images/flag.png'));
 
+			goal = {
+				element: "goal",
+				offset: {
+					x: flagX,
+					y: flagY-168
+				},
+				width: 32,
+				height: 168,
+			}
+			elements.push(goal);
+
+			console.log(goal);
+		}
 	}
 
 	function nextFrame(frame) {
@@ -85,10 +109,13 @@ $(document).ready(function() {
 	function drawCanvas() {
 		ctx.clearRect(0, 0, width, height);
 
-		frame = nextFrame(frame);
-		
+		// Draw goal flag.
+		ctx.drawImage(flag, flagX, flagY-flag.height);
 
-	 	ctx.drawImage(images[dir_left ? frame+6 : frame], rectangle.x, rectangle.y);
+		// Draw Mario.
+		frame = nextFrame(frame);
+		img = images[dir_left ? frame+6 : frame];
+	 	ctx.drawImage(img, rectangle.x, rectangle.y-img.height);
 	}
 
 	// [name] image file name
@@ -111,7 +138,7 @@ $(document).ready(function() {
 					element_string = "a, p, h1, h2, h3, h4, h5, h6, hr, li";
 
 					$(element_string).each(function(i, e) {
-						$(e).css("background-color", "gray")
+						$(e).css("background-color", "gray");
 					});
 
 					elements = $(element_string).map(function(i, e) {
@@ -125,6 +152,8 @@ $(document).ready(function() {
 							height: $(e).height()
 						}
 					});
+
+					generateGoal(elements, force || forceElements);
 
 					// We make this true after the animations on the explode.
 					// And make it false again, in order to avoid more calls until the next explode.
@@ -198,6 +227,10 @@ $(document).ready(function() {
 
 			for(i = 0; i < pageElements().length; i++) {
 				if(overlaps(pageElements()[i], fakeRectangle).collide) {
+					if(pageElements()[i].element == "goal") {
+						reachedGoal();
+					}
+
 					collision_x = true;
 					fakeRectangle.offset.x -= ball_x_speed;
 					ball_x_speed = 0;
@@ -296,11 +329,18 @@ $(document).ready(function() {
 		}
 	};
 
+	function reachedGoal() {
+		alert("You reached your goal");
+	}
+
 	function explode(grounds) {
 		var length = grounds.length;
 		var once = true;
 		for(var j = 0; j < grounds.length; j++) {
 			var o = grounds[j];
+
+			if(o == "goal")
+				reachedGoal();
 
 			if(o != undefined) {
 				var $o = $(o);
