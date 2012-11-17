@@ -58,7 +58,6 @@ $(document).ready(function() {
 	}
 
 	function nextFrame(frame) {
-		console.log(ball_y_speed);
 		if(ball_y_speed >= 0) {
 			if(moving) {
 				dateNow = Date.now();
