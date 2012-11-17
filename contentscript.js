@@ -17,6 +17,8 @@ $(document).ready(function() {
 	var dateLast = Date.now();
 	var moving = false;
 
+  var goal_reached = false;
+
 	function init() {
 		// Overlay canvas.
 		canvas = document.createElement('canvas');
@@ -332,7 +334,14 @@ $(document).ready(function() {
 	};
 
 	function reachedGoal() {
-		alert("You reached your goal");
+    if(!goal_reached) {
+      // stopping
+      stopwatch.startStop();
+
+		  alert("You reached your goal");
+      goal_reached = true;
+    } else {
+    }
 	}
 
 	function explode(grounds) {
@@ -386,6 +395,102 @@ $(document).ready(function() {
 
 	document.addEventListener('keydown', keyDown, true);
 	document.addEventListener('keyup', keyUp, true);
+
+
+  /**
+   * This file defines the Stopwatch class.
+   * Note that it knows nothing about instances and how those instances are used.
+   */
+  var Stopwatch;
+  if (!Stopwatch)
+    Stopwatch = {};
+
+  /**
+   * Constructs a new Stopwatch instance.
+   * @param {Object} displayTime the strategy for displaying the time
+   */
+  function Stopwatch(displayTime){
+    this.runtime = 0; // milliseconds
+    this.timer = null; // nonnull iff runnig
+    this.displayTime = displayTime; // not showing runtime anywhere
+  }
+
+  /**
+   * The increment in milliseconds.
+   * (This is a class variable shared by all Stopwatch instances.)
+   */
+  Stopwatch.INCREMENT = 200
+
+    /**
+     * Displays the time using the appropriate display strategy.
+     */
+    Stopwatch.prototype.doDisplay = function(){
+      if (!this.laptime)
+        this.displayTime(this.runtime);
+      else
+        this.displayTime(this.laptime);
+    }
+
+  /**
+   * Handles an incoming start/stop event.
+   */
+  Stopwatch.prototype.startStop = function(){
+    if (!this.timer) {
+      var instance = this;
+      this.timer = window.setInterval(function(){
+        instance.runtime += Stopwatch.INCREMENT;
+        instance.doDisplay();
+      }, Stopwatch.INCREMENT);
+    }
+    else {
+      window.clearInterval(this.timer);
+      this.timer = null;
+      this.doDisplay();
+    }
+  }
+
+  /**
+   * Handles an incoming reset/lap event.
+   */
+  Stopwatch.prototype.resetLap = function(){
+    if (!this.laptime) {
+      if (this.timer) {
+        this.laptime = this.runtime;
+      }
+      else {
+        this.runtime = 0;
+      }
+    }
+    else {
+      delete this.laptime;
+    }
+    this.doDisplay();
+  }
+
+  var sw_div = $("<div id=\"time\"></div>");
+  sw_div.css("width", "75px");
+  sw_div.css("height", "25px");
+  sw_div.css("position", "absolute");
+  sw_div.css("top", "0");
+  sw_div.css("left", "0");
+  sw_div.css("zindex", "9999999999");
+  sw_div.css("background-color", "black");
+
+  $("body").append(sw_div);
+
+  var stopwatch = new Stopwatch(function(runtime) {
+    // format time as m:ss.d
+    var minutes = Math.floor(runtime / 60000);
+    var seconds = Math.floor(runtime % 60000 / 1000);
+    var decimals = Math.floor(runtime % 1000 / 100);
+    var displayText = minutes + ":" + (seconds < 10 ? "0" : "") + seconds + "." + decimals;
+
+    // writing output to screen
+    $("#time").html(displayText);
+  });
+
+  // starting
+  stopwatch.startStop();
 
 	init();
 
