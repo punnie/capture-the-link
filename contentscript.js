@@ -1,5 +1,8 @@
 $(document).ready(function() {
-	var canvas, ctx, width, height, rectangle, ball_x_speed, ball_y_speed = false;
+	var canvas, ctx, width, height, rectangle;
+	var grappling = false;
+	var ball_x_speed = 0;
+	var ball_y_speed = 0;
 
 	function init() {
 		// Overlay canvas.
@@ -103,31 +106,29 @@ $(document).ready(function() {
 			
 
 			for(i = 0; i < pageElements().length; i++) {
-				console.log(pageElements());
 				if(overlaps(pageElements()[i], fakeRectangle).collide) {
-					console.log("COLLIDE Y");
 					collision_y = true;
-					fakeRectangle.y -= ball_y_speed;
+					fakeRectangle.offset.y -= ball_y_speed;
 					ball_y_speed = 0;
+					break;
 				}
 			}
 
 			fakeRectangle.offset.x += ball_x_speed;
 
 			for(i = 0; i < pageElements().length; i++) {
-				console.log(pageElements());
 				if(overlaps(pageElements()[i], fakeRectangle).collide) {
-					console.log("COLLIDE X");
 					collision_x = true;
 					fakeRectangle.offset.x -= ball_x_speed;
 					ball_x_speed = 0;
+					break;
 				}
 			}
 		}
 
 		var draw_new_position = function() {
 			// set the new position applying the movement
-			rectangle.x = oldX + 10;
+			rectangle.x = oldX + ball_x_speed;
 			rectangle.y = oldY + ball_y_speed;
 
 			drawCanvas();
@@ -162,6 +163,56 @@ $(document).ready(function() {
 
 	}, 1000/60);
 
-	
+	function keyDown(e) {
+		switch(e.keyCode) {
+		// left arrow
+		case 65:
+			ball_x_speed = -4.0;
+			break;
+		// right arrow
+		case 68:
+			ball_x_speed = 4.0;
+			break;
+		// up arrow
+		case 87:
+			if(collision_y) {
+				ball_y_speed -= 21.0;
+			}
+			break;
+		// down arrow
+		case 83:
+			// nothing
+			break;
+		// h (grapling hook)
+		case 72:
+			if(!grappling) {
+				console.log("GRAPLING HOOK!");
+			}
+			grappling = true;
+			break;
+			// default case
+		default:
+			console.log("keyDown:"+e.keyCode);
+		}
+	};
+
+	function keyUp(e) {
+		switch(e.keyCode) {
+		// left arrow
+		case 65:
+		case 68:
+
+			ball_x_speed = 0;
+			break;
+		default:
+			console.log("keyUp:"+e.keyCode);
+		}
+	};
+
+	document.addEventListener('keydown', keyDown, true);
+	document.addEventListener('keyup', keyUp, true);
+
 	init();
+
+	console.log("success!");
 });
