@@ -7,6 +7,12 @@ $(document).ready(function() {
 	var forceElements = false;
 	var ground;
 
+	var images;
+	var frame = -1;
+	var dir_left = false;
+	var dateLast = Date.now();
+	var moving = false;
+
 	function init() {
 		// Overlay canvas.
 		canvas = document.createElement('canvas');
@@ -32,14 +38,58 @@ $(document).ready(function() {
 			h: 50
 		}
 
+		// load all game images here
+    	images = [
+    		loadImage(chrome.extension.getURL('images/1.png')),
+			loadImage(chrome.extension.getURL('images/2.png')),
+			loadImage(chrome.extension.getURL('images/3.png')),
+			loadImage(chrome.extension.getURL('images/4.png')),
+			loadImage(chrome.extension.getURL('images/1_2.png')),
+			loadImage(chrome.extension.getURL('images/2_2.png')),
+			loadImage(chrome.extension.getURL('images/3_2.png')),
+			loadImage(chrome.extension.getURL('images/4_2.png'))
+		];
+
 		drawCanvas();
+
+
+	}
+
+	function nextFrame(frame) {
+		if(moving) {
+			dateNow = Date.now();
+			if(dateNow-dateLast > 100) {
+				dateLast = dateNow;
+				frame++;
+			}
+
+			if(frame < 0)
+				return 0;
+			else if(frame < 3)
+				return frame;
+			else
+				return 0;
+		}
+		return 3;
 	}
 
 	function drawCanvas() {
 		ctx.clearRect(0, 0, width, height);
-	 	ctx.fillRect(rectangle.x, rectangle.y, rectangle.w, rectangle.h);
+
+		frame = nextFrame(frame);
+
+	 	ctx.drawImage(images[dir_left ? frame+4 : frame], rectangle.x, rectangle.y);
 	}
 
+	// [name] image file name
+	function loadImage(name) {
+		// create new image object
+		var image = new Image();
+		// load image
+		image.src = name;
+		// return image object
+		return image;
+	}
 
 	var pageElements = function() {
 			var elements = [];
@@ -181,10 +231,14 @@ $(document).ready(function() {
 		switch(e.keyCode) {
 		// left arrow
 		case 65:
+			moving = true;
+			dir_left = true;
 			ball_x_speed = -4.0;
 			break;
 		// right arrow
 		case 68:
+			moving = true;
+			dir_left = false;
 			ball_x_speed = 4.0;
 			break;
 		// up arrow
@@ -219,6 +273,7 @@ $(document).ready(function() {
 		// left arrow
 		case 65:
 		case 68:
+			moving = false;
 			ball_x_speed = 0;
 			break;
 		default:
