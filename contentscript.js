@@ -68,8 +68,6 @@ $(document).ready(function() {
 
 					// We make this true after the animations on the explode.
 					// And make it false again, in order to avoid more calls until the next explode.
-					if(forceElements)
-						console.log("forced");
 					forceElements = false;
 				}
 
@@ -229,7 +227,6 @@ $(document).ready(function() {
 	};
 
 	function explode(grounds) {
-		console.log(grounds.length)
 		var length = grounds.length;
 		var once = true;
 		for(var j = 0; j < grounds.length; j++) {
