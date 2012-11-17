@@ -109,13 +109,10 @@ $(document).ready(function() {
 	function drawCanvas() {
 		ctx.clearRect(0, 0, width, height);
 
-<<<<<<< HEAD
 		frame = nextFrame(frame);
 
-=======
 		// Draw goal flag.
 		ctx.drawImage(flag, flagX, flagY-flag.height);
->>>>>>> 1af7bd1e0c5971de83697b969947fb61a48fba84
 
 		// Draw Mario.
 		frame = nextFrame(frame);
